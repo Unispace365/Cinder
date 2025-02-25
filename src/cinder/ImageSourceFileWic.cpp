@@ -49,11 +49,11 @@ void ImageSourceFileWic::registerSelf()
 	ImageIoRegistrar::registerSourceType( "wdp", ImageSourceFileWic::create, SOURCE_PRIORITY ); // HD Photo Format
 	ImageIoRegistrar::registerSourceType( "ico", ImageSourceFileWic::create, SOURCE_PRIORITY );
 	ImageIoRegistrar::registerSourceType( "jpe", ImageSourceFileWic::create, SOURCE_PRIORITY ); ImageIoRegistrar::registerSourceType( "jpg", ImageSourceFileWic::create, SOURCE_PRIORITY );
-		ImageIoRegistrar::registerSourceType( "jpeg", ImageSourceFileWic::create, SOURCE_PRIORITY );
+	ImageIoRegistrar::registerSourceType( "jpeg", ImageSourceFileWic::create, SOURCE_PRIORITY );
 	ImageIoRegistrar::registerSourceType( "jxr", ImageSourceFileWic::create, SOURCE_PRIORITY ); // JPEG XR
 	ImageIoRegistrar::registerSourceType( "png", ImageSourceFileWic::create, SOURCE_PRIORITY );
 	ImageIoRegistrar::registerSourceType( "tif", ImageSourceFileWic::create, SOURCE_PRIORITY ); ImageIoRegistrar::registerSourceType( "tiff", ImageSourceFileWic::create, SOURCE_PRIORITY );
-
+	ImageIoRegistrar::registerSourceType( "webp", ImageSourceFileWic::create, SOURCE_PRIORITY ); // WebP 
 	ImageIoRegistrar::registerSourceGeneric( ImageSourceFileWic::create, SOURCE_PRIORITY );
 }
 
@@ -61,8 +61,8 @@ IWICImagingFactory* ImageSourceFileWic::getFactory()
 {
 	static IWICImagingFactory *sIWICFactory = []() {
 		IWICImagingFactory *result = NULL;
-#if defined(CLSID_WICImagingFactory1)
-		::HRESULT hr = ::CoCreateInstance( CLSID_WICImagingFactory1, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&result) );
+#if defined(WINCODEC_SDK_VERSION2)
+		::HRESULT hr = ::CoCreateInstance( CLSID_WICImagingFactory2, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&result) );
 #else
 		::HRESULT hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&result) );
 #endif
@@ -181,6 +181,9 @@ bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID 
 	}
 	else if( guid == GUID_WICPixelFormat32bppBGRA ) {
 		setChannelOrder( ImageIo::BGRA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );
+	} 
+	else if (guid == GUID_WICPixelFormat32bppRGBA) {
+		setChannelOrder(ImageIo::RGBA); setColorModel(ImageIo::CM_RGB); setDataType(ImageIo::UINT8);
 	}
 	else if( guid == GUID_WICPixelFormat32bppPBGRA ) {
 		setChannelOrder( ImageIo::BGRA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); setPremultiplied( true );
